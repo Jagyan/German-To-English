@@ -16,7 +16,8 @@ parser.add_argument("--mode", default = "evaluate", help = "Mode of operation: t
 parser.add_argument("--phrase", default = "Herzlich Willkommen!", help = "German phrase to translate")
 parser.add_argument("--num_epoch", default = 18, type = int, help = "Number of epochs to train")
 
-def train_model(model, start = 1, epochs = 18):
+def train_model(model, start = 0, epochs = 18):
+    start = start + 1
     end = start + epochs
     for epoch in range(start, end):
         start_time = timer()
@@ -68,15 +69,14 @@ def translate(model: torch.nn.Module, src_sentence: str):
 #
 if __name__ == "__main__":
     args = parser.parse_args()
-    print(args)
     if(args.mode == "train"):
         loaded_model = train_model(md.transformer, epochs = args.num_epoch)
-    elif(args.mode == "translate"):
+    elif(args.mode == "transfer"):
         loaded_model = torch.load("models/" + args.model_path)
-        start = int(args.model_path.split("_")[1].split(".")[0]) + 1
-        train_model(loaded_model, start = start, epochs = start+args.num_epoch)
+        start = int(args.model_path.split("_")[1].split(".")[0])
+        train_model(loaded_model, start = start, epochs = args.num_epoch)
     else:
         loaded_model = torch.load("models/" + args.model_path)
 
-    
+    print(args.phrase)
     print(translate(loaded_model, args.phrase))
